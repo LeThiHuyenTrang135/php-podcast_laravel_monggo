@@ -23,20 +23,26 @@ class AuthService
     public function register($data)
     {
         try {
-            // DB::beginTransaction();
-
+            // 1) Tạo tài khoản
             $podcaster = $this->podcaster->create($data);
-            Log::info('Podcaster created: ' . $podcaster->id);
-            $podcaster->sendEmailVerificationNotification();
-            Log::info('Email verification sent to: ' . $podcaster->email);
-            // DB::commit();
+            Log::info('Podcaster created: '.$podcaster->id);
 
+            // 2) Thử gửi email xác minh, nhưng KHÔNG làm fail đăng ký nếu gửi lỗi
+            try {
+                $podcaster->sendEmailVerificationNotification();
+                Log::info('Email verification sent to: '.$podcaster->email);
+            } catch (\Throwable $mailEx) {
+                Log::warning('Send verify mail failed: '.$mailEx->getMessage());
+            }
+
+            // 3) Thành công: trả về model
             return $podcaster;
-        } catch (\Exception $e) {
-            // DB::rollBack();
-            Log::error('Registration error: ' . $e->getMessage());
-            return null;
+
+        } catch (\Throwable $e) {
+            Log::error('Registration error: '.$e->getMessage(), ['trace' => $e->getTraceAsString()]);
+            return null; // chỉ null khi tạo tài khoản thật sự lỗi
         }
+    
     }
 
     public function login($data)

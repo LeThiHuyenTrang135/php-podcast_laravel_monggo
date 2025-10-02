@@ -40,45 +40,53 @@
       <div class="container" data-aos="fade-up">
         <div class="row">
           <div class="col-md-7 mb-5">
-            <form action="#" method="post" class="bg-white">
+            <form action="{{ route('contact.store') }}" method="POST" class="bg-white">
+  @csrf
 
-              <div class="">
-                <div class="form-group row">
-                  <div class="col-md-6">
-                    <label for="c_fname" class="text-black">First Name <span class="text-danger">*</span></label>
-                    <input type="text" class="form-control" id="c_fname" name="c_fname">
-                  </div>
-                  <div class="col-md-6">
-                    <label for="c_lname" class="text-black">Last Name <span class="text-danger">*</span></label>
-                    <input type="text" class="form-control" id="c_lname" name="c_lname">
-                  </div>
-                </div>
-                <div class="form-group row">
-                  <div class="col-md-12">
-                    <label for="c_email" class="text-black">Email <span class="text-danger">*</span></label>
-                    <input type="email" class="form-control" id="c_email" name="c_email" placeholder="">
-                  </div>
-                </div>
-                <div class="form-group row">
-                  <div class="col-md-12">
-                    <label for="c_subject" class="text-black">Subject </label>
-                    <input type="text" class="form-control" id="c_subject" name="c_subject">
-                  </div>
-                </div>
+  <div class="form-group row">
+    <div class="col-md-6">
+      <label for="first_name" class="text-black">First Name <span class="text-danger">*</span></label>
+      <input type="text" class="form-control" id="first_name" name="first_name" value="{{ old('first_name') }}">
+      @error('first_name') <small class="text-danger">{{ $message }}</small> @enderror
+    </div>
+    <div class="col-md-6">
+      <label for="last_name" class="text-black">Last Name <span class="text-danger">*</span></label>
+      <input type="text" class="form-control" id="last_name" name="last_name" value="{{ old('last_name') }}">
+      @error('last_name') <small class="text-danger">{{ $message }}</small> @enderror
+    </div>
+  </div>
 
-                <div class="form-group row">
-                  <div class="col-md-12">
-                    <label for="c_message" class="text-black">Message </label>
-                    <textarea name="c_message" id="c_message" cols="30" rows="7" class="form-control"></textarea>
-                  </div>
-                </div>
-                <div class="form-group row">
-                  <div class="col-lg-12">
-                    <input type="submit" class="btn btn-primary btn-lg" value="Send Message">
-                  </div>
-                </div>
-              </div>
-            </form>
+  <div class="form-group row">
+    <div class="col-md-12">
+      <label for="email" class="text-black">Email <span class="text-danger">*</span></label>
+      <input type="email" class="form-control" id="email" name="email" value="{{ old('email') }}">
+      @error('email') <small class="text-danger">{{ $message }}</small> @enderror
+    </div>
+  </div>
+
+  <div class="form-group row">
+    <div class="col-md-12">
+      <label for="subject" class="text-black">Subject</label>
+      <input type="text" class="form-control" id="subject" name="subject" value="{{ old('subject') }}">
+      @error('subject') <small class="text-danger">{{ $message }}</small> @enderror
+    </div>
+  </div>
+
+  <div class="form-group row">
+    <div class="col-md-12">
+      <label for="message" class="text-black">Message</label>
+      <textarea name="message" id="message" cols="30" rows="7" class="form-control">{{ old('message') }}</textarea>
+      @error('message') <small class="text-danger">{{ $message }}</small> @enderror
+    </div>
+  </div>
+
+  <div class="form-group row">
+    <div class="col-lg-12">
+      <button type="submit" class="btn btn-primary btn-lg">Send Message</button>
+    </div>
+  </div>
+</form>
+
           </div>
           <div class="col-md-5">
             <div class="p-4 mb-3 bg-white">

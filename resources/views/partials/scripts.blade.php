@@ -15,93 +15,81 @@
 <script src="{{ asset('assets/js/mediaelement-and-player.min.js') }}"></script>
 
 <script>
-    document.addEventListener("DOMContentLoaded", () => {
-        const commentsContainer = document.querySelector(".comments");
+  document.addEventListener("DOMContentLoaded", () => {
+    const commentsContainer = document.querySelector(".comments");
+    if (!commentsContainer) return; // <- THÊM DÒNG NÀY. Không có .comments thì thoát, khỏi gắn listener
 
-        // Lấy token từ session
-        const token = '{{ session('token') }}';
+    // Lấy token từ session
+    const token = '{{ session('token') }}';
 
-        // Kiểm tra sự tồn tại của biến $podcast
-        const podcastId = '{{ isset($podcast) ? $podcast->id : '' }}';
+    // Nếu đang ở trang podcast có biến $podcast
+    const podcastId = '{{ isset($podcast) ? $podcast->id : '' }}';
 
-        // Xóa comment
-        commentsContainer.addEventListener("click", (event) => {
-            if (event.target.classList.contains("delete-btn")) {
-                const comment = event.target.closest(".comment");
-                const commentId = comment.dataset.id;
+    // XÓA comment (event delegation)
+    commentsContainer.addEventListener("click", (event) => {
+      if (!event.target.classList.contains("delete-btn")) return;
 
-                fetch(`/comments/${commentId}`, {
-                    method: 'DELETE',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'Authorization': `Bearer ${token}`,
-                        'X-CSRF-TOKEN': '{{ csrf_token() }}'
-                    }
-                })
-                .then(response => response.json())
-                .then(data => {
-                    if (data.status === 1) {
-                        commentsContainer.removeChild(comment);
-                    } else {
-                        alert('Failed to delete comment.');
-                    }
-                })
-                .catch(error => console.error('Error:', error));
-            }
-        });
+      const comment = event.target.closest(".comment");
+      const commentId = comment.dataset.id;
 
-        // Sửa comment
-        commentsContainer.addEventListener("click", (event) => {
-            if (event.target.classList.contains("edit-btn")) {
-                const comment = event.target.closest(".comment");
-                const contentElement = comment.querySelector(".comment-content");
-                const commentId = comment.dataset.id;
-
-                // Tạo textarea thay cho nội dung cũ
-                const textarea = document.createElement("textarea");
-                textarea.value = contentElement.textContent; // Lấy nội dung hiện tại
-                textarea.className = "edit-textarea";
-
-                contentElement.replaceWith(textarea); // Thay thế <p> bằng <textarea>
-
-                // Chuyển nút "Edit" thành "Save"
-                const editBtn = event.target;
-                editBtn.textContent = "Save";
-                editBtn.classList.add("save-btn");
-                editBtn.classList.remove("edit-btn");
-
-                // Xử lý khi nhấn "Save"
-                editBtn.addEventListener(
-                    "click",
-                    function saveComment() {
-                        // Gửi request AJAX để cập nhật comment
-                        fetch(`/comments/${commentId}`, {
-                            method: 'PUT',
-                            headers: {
-                                'Content-Type': 'application/json',
-                                'Authorization': `Bearer ${token}`,
-                                'X-CSRF-TOKEN': '{{ csrf_token() }}'
-                            },
-                            body: JSON.stringify({
-                                content: textarea.value,
-                                podcast_id: podcastId,
-                                podcaster_id: '{{ session('podcaster_id') }}'
-                            })
-                        })
-                        .then(response => response.json())
-                        .then(data => {
-                            if (data.status === 1) {
-                                // Reload trang sau khi cập nhật thành công
-                                location.reload();
-                            } else {
-                                alert('Failed to update comment.');
-                            }
-                        })
-                        .catch(error => console.error('Error:', error));
-                    },
-                    { once: true } // Đảm bảo chỉ chạy sự kiện một lần
-                );
-            }
-        });
+      fetch(`/comments/${commentId}`, {
+        method: 'DELETE',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`,
+          'X-CSRF-TOKEN': '{{ csrf_token() }}'
+        }
+      })
+      .then(r => r.json())
+      .then(data => {
+        if (data.status === 1) {
+          commentsContainer.removeChild(comment);
+        } else {
+          alert('Failed to delete comment.');
+        }
+      })
+      .catch(console.error);
     });
+
+    // SỬA comment
+    commentsContainer.addEventListener("click", (event) => {
+      if (!event.target.classList.contains("edit-btn")) return;
+
+      const comment = event.target.closest(".comment");
+      const contentElement = comment.querySelector(".comment-content");
+      const commentId = comment.dataset.id;
+
+      const textarea = document.createElement("textarea");
+      textarea.value = contentElement.textContent;
+      textarea.className = "edit-textarea";
+      contentElement.replaceWith(textarea);
+
+      const editBtn = event.target;
+      editBtn.textContent = "Save";
+      editBtn.classList.add("save-btn");
+      editBtn.classList.remove("edit-btn");
+
+      editBtn.addEventListener("click", function saveComment() {
+        fetch(`/comments/${commentId}`, {
+          method: 'PUT',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${token}`,
+            'X-CSRF-TOKEN': '{{ csrf_token() }}'
+          },
+          body: JSON.stringify({
+            content: textarea.value,
+            podcast_id: podcastId,
+            podcaster_id: '{{ session('podcaster_id') }}'
+          })
+        })
+        .then(r => r.json())
+        .then(data => {
+          if (data.status === 1) location.reload();
+          else alert('Failed to update comment.');
+        })
+        .catch(console.error);
+      }, { once: true });
+    });
+  });
 </script>

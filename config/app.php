@@ -213,4 +213,9 @@ return [
         // 'ExampleClass' => App\Example\ExampleClass::class,
     ])->toArray(),
 
+
+
+    'ws_client' => env('WS_CLIENT_URL', 'ws://127.0.0.1:8080/ws'),
+
+
 ];

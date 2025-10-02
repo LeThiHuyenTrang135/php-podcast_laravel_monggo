@@ -19,6 +19,9 @@ class Podcaster extends Authenticatable implements MustVerifyEmail
 {
     use HasFactory, Notifiable, HasApiTokens;
 
+    protected $connection = 'mongodb';
+    protected $collection = 'podcasters'; // tên collection bạn đang dùng
+
     protected $fillable = [
         'name',
         'email',
@@ -29,8 +32,17 @@ class Podcaster extends Authenticatable implements MustVerifyEmail
         'email_verified_at'
     ];
 
+    protected $hidden = ['password', 'remember_token'];
+
+    protected $casts = [
+        'email_verified_at' => 'datetime',
+    ];
+
+
     public function setPasswordAttribute($value)
     {
+                $info = password_get_info($value);
+
         $this->attributes['password'] = Hash::make($value);
     }
 

@@ -58,6 +58,16 @@
                             <img src="{{ asset('/assets/images/google_icon.png') }}" width="30px"> 
                             Login with Google 
                         </a>
+                        @if ($errors->any())
+  <div class="alert alert-danger">
+    <ul class="mb-0">
+      @foreach ($errors->all() as $error)
+        <li>{{ $error }}</li>
+      @endforeach
+    </ul>
+  </div>
+@endif
+
                         <form action="{{ route('register') }}" method="post" class="bg-white" enctype="multipart/form-data">
                             @csrf
 
@@ -92,9 +102,18 @@
                                 </div>
                             </div> --}}
 
+                            <!-- <div class="form-group row">
+                                <div class="col-md-12">
+                                     <label for="user_picture" class="text-black">User's picture</label>
+                                  <input type="file" class="form-control" id="user_picture" name="user_picture" accept="image/*">
+                                        </div>
+                                        </div> -->
+
+
                             <div class="form-group row">
                                 <div class="col-lg-12">
-                                    <input type="submit" class="btn btn-primary btn-lg" value="Register">
+                                    <!-- <input type="submit" class="btn btn-primary btn-lg" value="Register"> -->
+                                    <input id="register-button" type="submit" class="btn btn-primary btn-lg" value="Register">
                                 </div>
                             </div>
 
@@ -140,7 +159,8 @@
                     <div class="col-md-12">
                         <p>
                             <!-- Link back to Colorlib can't be removed. Template is licensed under CC BY 3.0. -->
-                            Copyright &copy;<script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script>
+                            Copyright &copy;
+                            <!-- <script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script> -->
                             <script>
                                 document.write(new Date().getFullYear());
                             </script> All rights reserved | This template is made with <i class="icon-heart-o" aria-hidden="true"></i> by <a href="https://colorlib.com" target="_blank">Colorlib</a>

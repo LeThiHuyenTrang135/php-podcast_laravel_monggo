@@ -5,7 +5,6 @@ namespace App\Http\Controllers\Auth;
 use App\Http\Controllers\Controller;
 use Illuminate\Foundation\Auth\EmailVerificationRequest;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth;
 
 class VerificationController extends Controller
 {
@@ -13,29 +12,36 @@ class VerificationController extends Controller
     {
         $this->middleware('auth');
         $this->middleware('signed')->only('verify');
-        $this->middleware('throttle:6,1')->only('verify', 'resend');
+        // throttle chỉ cần cho resend là đủ
+        $this->middleware('throttle:6,1')->only('resend');
     }
 
-    public function show()
+    // Trang thông báo cần xác minh
+    public function show(Request $request)
     {
+        if ($request->user()->hasVerifiedEmail()) {
+            return redirect()->intended('/'); // hoặc route('index')
+        }
         return view('auth.verify-email');
     }
 
+    // Xử lý link xác minh từ email
     public function verify(EmailVerificationRequest $request)
     {
-        $request->fulfill();
-
-        return redirect()->route('get_login')->with('success', 'Email verified successfully.');
+        $request->fulfill(); // đánh dấu đã verify
+        return redirect()->intended('/')->with('verified', true); // hoặc route('index')
     }
 
+    // Gửi lại email xác minh
     public function resend(Request $request)
     {
         if ($request->user()->hasVerifiedEmail()) {
-            return redirect()->route('get_login')->with('success', 'Email verified successfully.');
+            return redirect()->intended('/'); // đã xác minh thì đưa về trang chính
         }
 
         $request->user()->sendEmailVerificationNotification();
 
-        return back()->with('success', 'Verification link sent!');
+        // CHUẨN: dùng key 'status' = 'verification-link-sent'
+        return back()->with('status', 'verification-link-sent');
     }
 }

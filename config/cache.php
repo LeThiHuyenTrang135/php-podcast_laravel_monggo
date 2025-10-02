@@ -48,6 +48,12 @@ return [
             'connection' => null,
             'lock_connection' => null,
         ],
+        'mongodb' => [
+        'driver'          => 'mongodb',
+        'table'           => 'cache',        // tên collection
+        'connection'      => 'mongodb',      // tên connection ở database.php
+        'lock_connection' => 'mongodb',
+    ],
 
         'file' => [
             'driver' => 'file',

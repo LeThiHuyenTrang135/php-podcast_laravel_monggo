@@ -1,3 +1,9 @@
+@auth
+  <script>window.USER_ID = "{{ Auth::id() }}";</script>
+@else
+  <script>window.USER_ID = "";</script>
+@endauth
+
 <header class="site-navbar py-4" role="banner">
 
     <div class="container">
